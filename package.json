@@ -1,8 +1,8 @@
 {
   "name": "pi-panel",
-  "displayName": "Pi Panel",
-  "description": "Auto-opens a terminal panel on the right and runs the 'pi' command",
-  "version": "0.0.1",
+  "displayName": "π Pi Panel",
+  "description": "VSCode/Codium-Erweiterung: Activity-Bar-Button + Statusbar-Item, das per Klick ein neues Pi-Terminal im rechten Editor-Split öffnet.",
+  "version": "0.1.0",
   "publisher": "your-publisher",
   "engines": {
     "vscode": "^1.80.0"
@@ -18,9 +18,28 @@
     "commands": [
       {
         "command": "piPanel.open",
-        "title": "Open Pi Panel"
+        "title": "π  Open Pi Terminal",
+        "icon": "$(terminal)"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "piPanel",
+          "title": "Pi Panel",
+          "icon": "resources/pi-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "piPanel": [
+        {
+          "id": "piPanel.view",
+          "name": "Pi Terminal",
+          "icon": "resources/pi-icon.svg"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

@@ -1,4 +1,4 @@
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/steimerbyte)
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.png)](https://ko-fi.com/steimerbyte)
 
 > ⭐ Wenn du das nützlich findest, [unterstütze mich auf Ko-fi](https://ko-fi.com/steimerbyte)!
 
@@ -18,6 +18,8 @@ Beim Start splittet die Erweiterung den Editor – dein Code bleibt links, eine 
 
 ## Features
 
+- **π-Button in der Activity Bar** – Neues Icon links (neben Explorer & Extensions) – ein Klick spawnt ein frisches Pi-Terminal im rechten Split
+- **Statusbar-Item** – Zusätzlicher π-Button unten links, immer sichtbar
 - **Editor-Tab-Terminal** – Öffnet in einer neuen Editor-Gruppe neben der aktiven, nicht im unteren Panel
 - **Startet `pi` automatisch** – Feuert einmal bei `onStartupFinished`, Terminal ist offen und `pi` läuft bereits
 - **Nicht-invasiv** – Nur beim App-Start, nie während Debug oder Window-Focus
