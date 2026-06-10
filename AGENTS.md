@@ -16,10 +16,11 @@ VSCode/Codium extension that:
 
 - `activationEvents`: `onStartupFinished` — fires once, never during debug
 - `vscode.ViewColumn.Beside` (`-2`) — terminal appears as editor tab in new right-side split group
+- `cwd` of new terminal = workspace folder of the active editor; falls back to first workspace folder; falls back to VSCode default
 - `hasActivated` runtime guard — prevents double-fire on re-activation
 - Command `piPanel.open` — spawns new Pi terminal, registered in `package.json` contributes
 - Activity Bar container: `piPanel` (left strip)
-- TreeView: `piPanel.view` (single clickable item)
+- TreeView: `piPanel.view` (empty — no submenu; click on π icon fires `piPanel.open` directly via `onDidChangeVisibility`)
 - StatusBarItem: alignment `Left`, priority `100`, command `piPanel.open`
 - Icon: `resources/pi-icon.svg` (π symbol, dark/light theme adaptive via `currentColor`)
 
@@ -41,7 +42,7 @@ VSCode/Codium extension that:
 - `npx vsce package` must complete without `ERROR` (warnings ok)
 - Reload Codium and confirm:
   - On startup: editor splits, right tab = Pi Terminal running `pi`
-  - Activity Bar: π-icon visible left
+  - Activity Bar: π-icon visible left, **clicking it opens a fresh terminal directly** (no submenu)
   - Status Bar: `π Pi` visible bottom-left
   - Each click on either button = fresh terminal in right split with `pi` running
 
