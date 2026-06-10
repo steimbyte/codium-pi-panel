@@ -19,6 +19,8 @@ VSCode/Codium extension that:
 - `cwd` of new terminal = workspace folder of the active editor; falls back to first workspace folder; falls back to VSCode default
 - `hasActivated` runtime guard — prevents double-fire on re-activation
 - Command `piPanel.open` — spawns new Pi terminal, registered in `package.json` contributes
+- On **every** activation, idempotently checks & sets `terminal.integrated.confirmOnExit = false` and `terminal.integrated.confirmOnKill = "never"` in user settings (only writes if `globalValue` is undefined; explicit user overrides are preserved)
+- One-time information notification on first write, gated by `globalState.piPanel.settingsNotified`
 - Activity Bar container: `piPanel` (left strip)
 - TreeView: `piPanel.view` (empty — no submenu; click on π icon fires `piPanel.open` directly via `onDidChangeVisibility`)
 - StatusBarItem: alignment `Left`, priority `100`, command `piPanel.open`
@@ -45,6 +47,7 @@ VSCode/Codium extension that:
   - Activity Bar: π-icon visible left, **clicking it opens a fresh terminal directly** (no submenu)
   - Status Bar: `π Pi` visible bottom-left
   - Each click on either button = fresh terminal in right split with `pi` running
+  - User settings.json contains `terminal.integrated.confirmOnExit: false` and `terminal.integrated.confirmOnKill: "never"` (after first install)
 
 ## Child DOX Index
 

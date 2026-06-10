@@ -2,7 +2,7 @@
   "name": "pi-panel",
   "displayName": "π Pi Panel",
   "description": "VSCode/Codium-Erweiterung: Activity-Bar-Button + Statusbar-Item, das per Klick ein neues Pi-Terminal im rechten Editor-Split öffnet.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "your-publisher",
   "engines": {
     "vscode": "^1.80.0"

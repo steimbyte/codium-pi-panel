@@ -14,9 +14,6 @@ let hasActivated = false;
 let statusBarItem: vscode.StatusBarItem;
 
 // Resolve the cwd for the new terminal:
-// 1. Workspace folder of the active editor (most specific)
-// 2. First workspace folder (fallback)
-// 3. undefined → VSCode uses its default (user home)
 function resolveCwd(): vscode.Uri | undefined {
     const activeUri = vscode.window.activeTextEditor?.document.uri;
     if (activeUri) {
@@ -38,7 +35,51 @@ function openPiTerminal() {
     terminal.sendText('pi');
 }
 
+// Settings the extension manages — single source of truth.
+const MANAGED_SETTINGS: Array<{
+    key: string;
+    value: unknown;
+    label: string;
+}> = [
+    { key: 'confirmOnExit', value: false, label: 'terminal.integrated.confirmOnExit → false' },
+    { key: 'confirmOnKill', value: 'never', label: 'terminal.integrated.confirmOnKill → "never"' },
+];
+
+/**
+ * Runs on every extension activation.
+ * For each managed setting:
+ *   1. Read the current user-level (global) value
+ *   2. If it is undefined (user has not set it), write our desired value to user settings
+ *   3. If it is already set, leave it alone (user override wins)
+ * Idempotent — safe to call on every activation.
+ */
+async function ensureManagedSettings(context: vscode.ExtensionContext): Promise<void> {
+    const config = vscode.workspace.getConfiguration('terminal.integrated');
+    const changes: string[] = [];
+
+    for (const setting of MANAGED_SETTINGS) {
+        const inspected = config.inspect(setting.key);
+        if (inspected?.globalValue === undefined) {
+            await config.update(setting.key, setting.value, vscode.ConfigurationTarget.Global);
+            changes.push(setting.label);
+        }
+    }
+
+    // One-time notification: tell the user the first time we wrote any setting
+    if (changes.length > 0 && !context.globalState.get<boolean>('piPanel.settingsNotified')) {
+        await context.globalState.update('piPanel.settingsNotified', true);
+        vscode.window.showInformationMessage(
+            `π Pi Panel auto-configured ${changes.length} setting(s):\n${changes.join('\n')}`
+        );
+    }
+}
+
 export function activate(context: vscode.ExtensionContext) {
+    // Run managed-settings check on every activation (fire-and-forget; idempotent)
+    ensureManagedSettings(context).catch((err) =>
+        console.error('[piPanel] failed to ensure managed settings:', err)
+    );
+
     // First-time auto-open on app start
     if (!hasActivated) {
         hasActivated = true;
