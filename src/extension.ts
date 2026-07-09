@@ -14,17 +14,20 @@ let hasActivated = false;
 let statusBarItem: vscode.StatusBarItem;
 
 // Resolve the cwd for the new terminal.
-// Priority:
-//   1. activeTextEditor → its workspace folder  (user has a file open in the folder they want)
-//   2. first workspaceFolders entry             (window root / multi-root leftmost folder)
+// The window root is the first entry in workspaceFolders —
+// this is the folder VSCode was opened with (e.g. `code /path/to/folder`)
+// and is the most reliable indicator of the "current workspace root".
+// activeTextEditor is intentionally NOT consulted: in multi-root
+// workspaces it may point to a file from a *different* root folder.
 function resolveCwd(): vscode.Uri | undefined {
-    const activeUri = vscode.window.activeTextEditor?.document.uri;
-    if (activeUri) {
-        const folder = vscode.workspace.getWorkspaceFolder(activeUri);
-        if (folder) return folder.uri;
-    }
     const folders = vscode.workspace.workspaceFolders;
     if (folders && folders.length > 0) return folders[0].uri;
+
+    // Last-resort fallback: an open single file outside any workspace.
+    const activeUri = vscode.window.activeTextEditor?.document.uri;
+    if (activeUri) {
+        return vscode.workspace.getWorkspaceFolder(activeUri)?.uri;
+    }
     return undefined;
 }
 
