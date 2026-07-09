@@ -13,7 +13,10 @@ class PiPanelProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 let hasActivated = false;
 let statusBarItem: vscode.StatusBarItem;
 
-// Resolve the cwd for the new terminal:
+// Resolve the cwd for the new terminal.
+// Priority:
+//   1. activeTextEditor → its workspace folder  (user has a file open in the folder they want)
+//   2. first workspaceFolders entry             (window root / multi-root leftmost folder)
 function resolveCwd(): vscode.Uri | undefined {
     const activeUri = vscode.window.activeTextEditor?.document.uri;
     if (activeUri) {
@@ -26,11 +29,15 @@ function resolveCwd(): vscode.Uri | undefined {
 }
 
 function openPiTerminal() {
-    const terminal = vscode.window.createTerminal({
+    const cwd = resolveCwd();
+    const options: vscode.TerminalOptions = {
         name: 'Pi Terminal',
         location: { viewColumn: vscode.ViewColumn.Beside },
-        cwd: resolveCwd(),
-    });
+    };
+    if (cwd) {
+        options.cwd = cwd;
+    }
+    const terminal = vscode.window.createTerminal(options);
     terminal.show();
     terminal.sendText('pi');
 }
@@ -80,10 +87,24 @@ export function activate(context: vscode.ExtensionContext) {
         console.error('[piPanel] failed to ensure managed settings:', err)
     );
 
-    // First-time auto-open on app start
+    // First-time auto-open on app start — guard against
+    // workspaceFolders not being populated yet at onStartupFinished.
+    // The 500 ms buffer gives the window time to resolve its workspace roots.
     if (!hasActivated) {
         hasActivated = true;
-        openPiTerminal();
+        setTimeout(() => {
+            const cwd = resolveCwd();
+            const options: vscode.TerminalOptions = {
+                name: 'Pi Terminal',
+                location: { viewColumn: vscode.ViewColumn.Beside },
+            };
+            if (cwd) {
+                options.cwd = cwd;
+            }
+            const terminal = vscode.window.createTerminal(options);
+            terminal.show();
+            terminal.sendText('pi');
+        }, 500);
     }
 
     // Command: spawn new pi terminal
